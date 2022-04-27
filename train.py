@@ -164,8 +164,6 @@ def main():
     d_scaler = torch.cuda.amp.GradScaler()
 
     #evauation data loading
-    val_dataset = Kaiset(path=config.VAL_DIR, Listset=config.TEST_LIST, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=config.EVAL_BATCH_SIZE, shuffle=False)
     best=10000000
     resultat=1
     for epoch in range(config.NUM_EPOCHS):
@@ -179,7 +177,7 @@ def main():
         save_checkpoint(gen, opt_gen, epoch, filename=config.CHECKPOINT_GEN)
         save_checkpoint(disc, opt_disc, epoch, filename=config.CHECKPOINT_DISC)
 
-        save_some_examples(gen, val_loader, epoch, folder="evaluation")
+        save_some_examples(gen, test_loader, epoch, folder="evaluation")
 
 
 if __name__ == "__main__":
