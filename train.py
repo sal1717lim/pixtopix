@@ -3,7 +3,9 @@ from utils import save_checkpoint, load_checkpoint, save_some_examples
 import torch.nn as nn
 import torch.optim as optim
 import config
+from  pytorch_msssim import MS_SSIM
 from costumDataset import Kaiset
+import sys
 #chooses what model to train
 if config.MODEL == "ResUnet":
     from resUnet import Generator
@@ -48,7 +50,10 @@ def train_fn(
         with torch.cuda.amp.autocast():
             D_fake = disc(x, y_fake)
             G_fake_loss = bce(D_fake, torch.ones_like(D_fake))
-            L1 = l1_loss(y_fake, y) * config.L1_LAMBDA
+            if sys.argv[2]=="L1":
+                L1 = l1_loss(y_fake, y) * int(sys.argv[3])
+            else:
+                L1 = l1_loss((y_fake+1)/2,(y+1)/2)*int(sys.argv[3])
             G_loss = G_fake_loss + L1
 
         opt_gen.zero_grad()
@@ -110,7 +115,6 @@ def test_fn(
     disc.train()
     gen.train()
     return torch.tensor(resultat).mean()
-
 def main():
     #instancing the models
     disc = Discriminator(in_channels=3).to(config.DEVICE)
@@ -122,7 +126,10 @@ def main():
     opt_gen = optim.Adam(gen.parameters(), lr=config.LEARNING_RATE, betas=(0.5, 0.999))
     #instancing the Loss-functions
     BCE = nn.BCEWithLogitsLoss()
-    L1_LOSS = nn.L1Loss()
+    if sys.argv[2]=="L1":
+        L1_LOSS = nn.L1Loss()
+    else:
+        L1_LOSS = MS_SSIM(data_range=1, size_average=True, channel=1, win_size=11)
 
     #if true loads the checkpoit in the ./
     if config.LOAD_MODEL:
@@ -134,14 +141,14 @@ def main():
         )
 
     #training data loading
-    train_dataset = Kaiset(path=config.TRAIN_DIR, Listset=config.TRAIN_LIST)
+    train_dataset = Kaiset(path=sys.argv[1], Listset=config.TRAIN_LIST)
     train_loader = DataLoader(
         train_dataset,
         batch_size=config.BATCH_SIZE,
         shuffle=True,
         num_workers=config.NUM_WORKERS,
     )
-    test_dataset = Kaiset(path=config.TRAIN_DIR,train=False, Listset=config.TRAIN_LIST)
+    test_dataset = Kaiset(path=sys.argv[1],train=False, Listset=config.TRAIN_LIST)
     test_loader = DataLoader(
         test_dataset,
         batch_size=config.BATCH_SIZE,
@@ -163,10 +170,10 @@ def main():
         )
         resultat=test_fn(disc, gen, test_loader,  L1_LOSS, BCE, epoch=epoch)
         if best>resultat:
-            best=resultat
             print("improvement of the loss from {} to {}".format(best,resultat))
-            save_checkpoint(gen, opt_gen, epoch, filename=config.CHECKPOINT_GEN)
-            save_checkpoint(disc, opt_disc, epoch, filename=config.CHECKPOINT_DISC)
+            best = resultat
+        save_checkpoint(gen, opt_gen, epoch, filename=config.CHECKPOINT_GEN)
+        save_checkpoint(disc, opt_disc, epoch, filename=config.CHECKPOINT_DISC)
 
         save_some_examples(gen, val_loader, epoch, folder="evaluation")
 
