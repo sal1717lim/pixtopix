@@ -50,10 +50,11 @@ def train_fn(
         with torch.cuda.amp.autocast():
             D_fake = disc(x, y_fake)
             G_fake_loss = bce(D_fake, torch.ones_like(D_fake))
+            print()
             if sys.argv[2]=="L1":
                 L1 = l1_loss(y_fake, y) * int(sys.argv[3])
             else:
-                L1 = l1_loss((y_fake+1)/2,(y+1)/2)*int(sys.argv[3])
+                L1 = 1-l1_loss((y_fake+1)/2,(y+1)/2)*int(sys.argv[3])
             G_loss = G_fake_loss + L1
 
         opt_gen.zero_grad()
@@ -97,7 +98,10 @@ def test_fn(
         with torch.cuda.amp.autocast():
             D_fake = disc(x, y_fake)
             G_fake_loss = bce(D_fake, torch.ones_like(D_fake))
-            L1 = l1_loss(y_fake, y) * config.L1_LAMBDA
+            if sys.argv[2] == "L1":
+                L1 = l1_loss(y_fake, y) * int(sys.argv[3])
+            else:
+                L1 = 1 - l1_loss((y_fake.type(torch.DoubleTensor) + 1) / 2, (y.type(torch.DoubleTensor) + 1) / 2) * int(sys.argv[3])
             G_loss = G_fake_loss + L1
             resultat.append(L1.item())
 
