@@ -133,7 +133,7 @@ def main():
     if sys.argv[2]=="L1":
         L1_LOSS = nn.L1Loss()
     else:
-        L1_LOSS = MS_SSIM(data_range=1, size_average=True, channel=1, win_size=11)
+        L1_LOSS = MS_SSIM(data_range=1, size_average=True, channel=3, win_size=11)
 
     #if true loads the checkpoit in the ./
     if config.LOAD_MODEL:
