@@ -13,7 +13,7 @@ MODEL_LIST = ["ResUnet", "Unet"]
 MODEL = MODEL_LIST[0]
 #hyper-parameters
 LEARNING_RATE = 2e-4
-BATCH_SIZE = 64
+BATCH_SIZE = 32
 #the number of images saved by save_some_images
 EVAL_BATCH_SIZE = 16
 #the ressources allocated to loading the data
