@@ -172,7 +172,7 @@ def main():
         )
         resultat=test_fn(disc, gen, test_loader,  L1_LOSS, BCE, epoch=epoch)
         if best>resultat:
-            print("improvement of the loss from {} to {}".format(best,resultat))
+            print("improvement of the loss from {} to {}\n\n\n".format(best,resultat))
             best = resultat
         save_checkpoint(gen, opt_gen, epoch, filename=config.CHECKPOINT_GEN)
         save_checkpoint(disc, opt_disc, epoch, filename=config.CHECKPOINT_DISC)
