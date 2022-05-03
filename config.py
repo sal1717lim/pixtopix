@@ -4,8 +4,10 @@ from torchvision import transforms
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 #paths and sets for the data
 TRAIN_DIR = r'E:\KAIST-dataset\kaist-cvpr15\images'
-TRAIN_LIST = ["set00" , 'set01' , 'set02' , 'set06' , 'set07']
-TEST_LIST = ["set08"]
+DTRAIN_LIST = ["set00" , 'set01' , 'set02' , 'set06' , 'set07',"set08"]
+DTEST_LIST = ["set08"]
+NTRAIN_LIST = ["set03" , 'set04' , 'set05' , 'set09' , 'set10',"set11"]
+NTEST_LIST = ["set11"]
 VAL_DIR = r'E:\KAIST-dataset\kaist-cvpr15\images'
 #the list of models implemented.
 MODEL_LIST = ["ResUnet", "Unet"]
