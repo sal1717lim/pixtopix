@@ -25,7 +25,7 @@ IMAGE_SIZE = 256
 INIT_WEIGHTS = True
 CHANNELS_IMG = 3
 L1_LAMBDA = 10
-NUM_EPOCHS = 10
+NUM_EPOCHS = 30
 #when true loads the models saved as "disc.pth.tar" and "gen.pth.tar", they need to be in ./
 LOAD_MODEL = False
 #when true saves a checkpoint every 5 epochs
