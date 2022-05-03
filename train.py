@@ -19,7 +19,7 @@ from time import localtime
 import os
 if not os.path.exists("evaluation"):
     os.mkdir("evaluation")
-writer=SummaryWriter("train{}-{}-{}".format(localtime().tm_mon,localtime().tm_mday,localtime().tm_hour))
+writer=SummaryWriter("train{}-{}".format(localtime().tm_mon,localtime().tm_mday))
 torch.backends.cudnn.benchmark = True
 
 
