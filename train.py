@@ -126,8 +126,8 @@ def main():
     gen = Generator(init_weight=config.INIT_WEIGHTS).to(config.DEVICE)
     #print(gen)
     #instancing the optims
-    opt_disc = optim.Adam(disc.parameters(), lr=config.LEARNING_RATE, betas=(0.5, 0.999))
-    opt_gen = optim.Adam(gen.parameters(), lr=config.LEARNING_RATE, betas=(0.5, 0.999))
+    opt_disc = optim.Adam(disc.parameters(), lr=config.LEARNING_RATE*int(sys.argv[8]), betas=(0.5, 0.999))
+    opt_gen = optim.Adam(gen.parameters(), lr=config.LEARNING_RATE*int(sys.argv[8]), betas=(0.5, 0.999))
     schedulergen = torch.optim.lr_scheduler.ExponentialLR(opt_gen , gamma=0.1)
     schedulerdisc = torch.optim.lr_scheduler.ExponentialLR(opt_disc, gamma=0.1)
     #instancing the Loss-functions
