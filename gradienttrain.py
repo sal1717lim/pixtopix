@@ -31,9 +31,9 @@ class Gradient_Net(nn.Module):
 
     super(Gradient_Net, self).__init__()
     kernel_x = [[-1., 0., 1.], [-2., 0., 2.], [-1., 0., 1.]]
-    kernel_x = torch.FloatTensor(kernel_x).unsqueeze(0).unsqueeze(0).to(device)
+    kernel_x = torch.FloatTensor(kernel_x).to(device)
     kernel_y = [[-1., -2., -1.], [0., 0., 0.], [1., 2., 1.]]
-    kernel_y = torch.FloatTensor(kernel_y).unsqueeze(0).to(device)
+    kernel_y = torch.FloatTensor(kernel_y).to(device)
     kernel__y=torch.zeros((batchsize,1,3,3))
     kernel__x = torch.zeros((batchsize, 1, 3, 3))
     for i in range(batchsize):
@@ -43,6 +43,7 @@ class Gradient_Net(nn.Module):
     self.weight_y = nn.Parameter(data=kernel__y, requires_grad=False)
 
   def forward(self, x):
+    x=x.unsqueeze(1)
     grad_x = F.conv2d(x, self.weight_x)
     grad_y = F.conv2d(x, self.weight_y)
     gradient =torch.sqrt( torch.pow(grad_x, 2) + torch.pow(grad_y, 2))
