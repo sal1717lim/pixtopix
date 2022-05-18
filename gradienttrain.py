@@ -44,8 +44,8 @@ class Gradient_Net(nn.Module):
 
   def forward(self, x):
     x=x.unsqueeze(1)
-    grad_x = F.conv2d(x, self.weight_x)
-    grad_y = F.conv2d(x, self.weight_y)
+    grad_x = F.conv2d(x.double(), self.weight_x.double())
+    grad_y = F.conv2d(x.double(), self.weight_y.double())
     gradient =torch.sqrt( torch.pow(grad_x, 2) + torch.pow(grad_y, 2))
     return gradient
 if not os.path.exists("evaluation"):
