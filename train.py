@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.optim as optim
 import config
 from  pytorch_msssim import MS_SSIM
-from costumDataset import Kaiset
+from costumDataset import Kaiset,depthset
 import sys
 #chooses what model to train
 if config.MODEL == "ResUnet":
@@ -148,14 +148,15 @@ def main():
         )
 
     #training data loading
-    train_dataset = Kaiset(path=sys.argv[1], Listset=config.DTRAIN_LIST if sys.argv[5]=="0"else config.NTRAIN_LIST)
+
+    train_dataset = depthset(path=sys.argv[1],depthpath=sys.argv[9], Listset=config.DTRAIN_LIST if sys.argv[5]=="0"else config.NTRAIN_LIST)
     train_loader = DataLoader(
         train_dataset,
         batch_size=int(sys.argv[4]),
         shuffle=True,
         num_workers=config.NUM_WORKERS,
     )
-    test_dataset = Kaiset(path=sys.argv[1],train=False, Listset=config.DTRAIN_LIST if sys.argv[5]=="0"else config.NTRAIN_LIST)
+    test_dataset = depthset(path=sys.argv[1],depthpath=sys.argv[9],train=False, Listset=config.DTRAIN_LIST if sys.argv[5]=="0"else config.NTRAIN_LIST)
     test_loader = DataLoader(
         test_dataset,
         batch_size=int(sys.argv[4]),

@@ -59,7 +59,33 @@ class Kaiset2(Dataset):
 
     def __len__(self):
         return self.nbdata
+class depthset(Dataset):
+    def __init__(self, path,depthpath ,Listset=["set00", 'set01', 'set02', 'set06', 'set07', 'set08'], train=True, shuffle=False):
+        self.path = path
+        self.depthpath=depthpath
+        self.data = []
+        self.depth=[]
+        self.Listset = Listset[:-1] if train else Listset[-1:]
+        for sets in self.Listset:
+            for v in os.listdir(self.path + '/' + sets):
+                _tmp = os.listdir(self.path + '/' + sets + "/" + v + '/lwir')
+                _tmp = [self.path + '/' + sets + "/" + v + '/lwir/' + x for x in _tmp]
+                _tmp2 = os.listdir(self.depthpath + '/' + sets + "/" + v )
+                _tmp2 = [self.path + '/' + sets + "/" + v + '/' + x for x in _tmp2]
+                self.data.extend(_tmp)
+                self.depth.extend(_tmp)
+        self.nbdata = len(self.data)
+        # if shuffle true, the data will be shuffeled before loading (used only in test data, in the trainign data is shuffeled using the loaded)
 
+    def __getitem__(self, index):
+        x = Image.open(self.depth[index])
+        x = config.transform2(x)
+        y = Image.open(self.data[index])
+        y = config.transform(y)
+        return x, y
+
+    def __len__(self):
+        return self.nbdata
 #testing if everything works proprely
 if __name__ == "__main__":
     dataset = Kaiset(r'C:\Users\dell\Desktop\safe')
