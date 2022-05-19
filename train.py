@@ -171,6 +171,7 @@ def main():
     best=10000000
     resultat=1
     for epoch in range(config.NUM_EPOCHS):
+        save_some_examples(gen, test_loader, epoch, folder="evaluation")
         train_fn(
            disc, gen, train_loader, opt_disc, opt_gen, L1_LOSS, BCE, g_scaler, d_scaler,epoch=epoch
         )
