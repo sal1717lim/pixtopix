@@ -68,12 +68,12 @@ class RGBD(Dataset):
         self.Listset = Listset[:-1] if train else Listset[-1:]
         for sets in self.Listset:
             for v in os.listdir(self.path + '/' + sets):
-                _tmp = os.listdir(self.path + '/' + sets + "/" + v + '/lwir')
-                _tmp = [self.path + '/' + sets + "/" + v + '/lwir/' + x for x in _tmp]
+                _tmp = os.listdir(self.path + '/' + sets + "/" + v + '/visible')
+                _tmp = [self.path + '/' + sets + "/" + v + '/visible/' + x for x in _tmp]
                 _tmp2 = os.listdir(self.depthpath + '/' + sets + "/" + v )
                 _tmp2 = [self.depthpath + '/' + sets + "/" + v + '/' + x for x in _tmp2]
                 self.data.extend(_tmp)
-                self.depth.extend(_tmp)
+                self.depth.extend(_tmp2)
         self.nbdata = len(self.data)
         # if shuffle true, the data will be shuffeled before loading (used only in test data, in the trainign data is shuffeled using the loaded)
 

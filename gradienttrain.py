@@ -1,5 +1,6 @@
 import torch
-from utils import save_checkpoint, load_checkpoint, save_some_examples
+from utils import save_checkpoint, load_checkpoint
+from utils import save_some_examples2 as save_some_examples
 import torch.nn as nn
 import torch.optim as optim
 import config
@@ -39,15 +40,15 @@ class Gradient_Net(nn.Module):
     for i in range(batchsize):
         kernel__y[i,:,:,:]=kernel_y
         kernel__x[i,:,:,:]=kernel_x
-    kernel__y=kernel__y.cuda()
-    kernel__x = kernel__x.cuda()
+    kernel__y=kernel__y.to(device)
+    kernel__x = kernel__x.to(device)
     self.weight_x = nn.Parameter(data=kernel__x, requires_grad=False)
     self.weight_y = nn.Parameter(data=kernel__y, requires_grad=False)
 
   def forward(self, x):
     x=x.unsqueeze(1)
-    grad_x = F.conv2d(x.double().cuda(), self.weight_x.double().cuda())
-    grad_y = F.conv2d(x.double().cuda(), self.weight_y.double().cuda())
+    grad_x = F.conv2d(x.double().to(device), self.weight_x.double().to(device))
+    grad_y = F.conv2d(x.double().to(device), self.weight_y.double().to(device))
     gradient =torch.sqrt( torch.pow(grad_x, 2) + torch.pow(grad_y, 2))
     return gradient
 if not os.path.exists("evaluation"):
@@ -211,6 +212,7 @@ def main():
     best=10000000
     resultat=1
     for epoch in range(config.NUM_EPOCHS):
+        save_some_examples(gen, test_loader, epoch, folder="evaluation")
         train_fn(
            disc, gen, train_loader, opt_disc, opt_gen, L1_LOSS, BCE, g_scaler, d_scaler,epoch=epoch
         )
