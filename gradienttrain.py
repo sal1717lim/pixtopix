@@ -120,7 +120,7 @@ def test_fn(
     gen.eval()
     with torch.no_grad():
      resultat=[]
-     for idx, (x, y) in enumerate(loop):
+     for idx, (x,x2, y) in enumerate(loop):
         x = x.to(config.DEVICE)
         y = y.to(config.DEVICE)
 
