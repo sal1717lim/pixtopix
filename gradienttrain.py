@@ -39,13 +39,15 @@ class Gradient_Net(nn.Module):
     for i in range(batchsize):
         kernel__y[i,:,:,:]=kernel_y
         kernel__x[i,:,:,:]=kernel_x
+    kernel__y=kernel__y.cuda()
+    kernel__x = kernel__x.cuda()
     self.weight_x = nn.Parameter(data=kernel__x, requires_grad=False)
     self.weight_y = nn.Parameter(data=kernel__y, requires_grad=False)
 
   def forward(self, x):
     x=x.unsqueeze(1)
-    grad_x = F.conv2d(x.double(), self.weight_x.double().cuda())
-    grad_y = F.conv2d(x.double(), self.weight_y.double().cuda())
+    grad_x = F.conv2d(x.double().cuda(), self.weight_x.double().cuda())
+    grad_y = F.conv2d(x.double().cuda(), self.weight_y.double().cuda())
     gradient =torch.sqrt( torch.pow(grad_x, 2) + torch.pow(grad_y, 2))
     return gradient
 if not os.path.exists("evaluation"):

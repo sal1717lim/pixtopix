@@ -106,7 +106,7 @@ class depthset(Dataset):
                 _tmp = os.listdir(self.path + '/' + sets + "/" + v + '/visible')
                 _tmp = [self.path + '/' + sets + "/" + v + '/visible/' + x for x in _tmp]
                 _tmp2 = os.listdir(self.depthpath + '/' + sets + "/" + v)
-                _tmp2 = [self.path + '/' + sets + "/" + v + '/' + x for x in _tmp2]
+                _tmp2 = [self.depthpath + '/' + sets + "/" + v + '/' + x for x in _tmp2]
                 self.data.extend(_tmp)
                 self.depth.extend(_tmp)
         self.nbdata = len(self.data)
