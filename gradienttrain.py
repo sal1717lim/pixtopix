@@ -57,7 +57,7 @@ g=Gradient_Net(int(sys.argv[4]))
 writer=SummaryWriter("train{}-{}".format(localtime().tm_mon,localtime().tm_mday))
 torch.backends.cudnn.benchmark = True
 
-
+l1=torch.nn.L1Loss()
 def train_fn(
     disc, gen, loader, opt_disc, opt_gen, l1_loss, bce, g_scaler, d_scaler,epoch=0
 ):
@@ -91,11 +91,11 @@ def train_fn(
 
 
             with torch.no_grad():
-                plusloss=l1_loss(gradientdepth,gradienttir)
+                plusloss=l1(gradientdepth,gradienttir)
             if sys.argv[2]=="L1":
                 L1 = l1_loss(y_fake, y) * int(sys.argv[3])
             else:
-                L1 = (1 - l1_loss((y_fake.type(torch.DoubleTensor) + 1) / 2, (y.type(torch.DoubleTensor) + 1) / 2)) * int(sys.argv[3])
+                L1 = (1 - l1_loss((y_fake.double() + 1) / 2, (y.double() + 1) / 2)) * int(sys.argv[3])
             G_loss = G_fake_loss + L1 + 3*plusloss
 
         opt_gen.zero_grad()
