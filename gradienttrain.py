@@ -96,14 +96,14 @@ def train_fn(
                 L1 = l1_loss(y_fake, y) * int(sys.argv[3])
             else:
                 L1 = (1 - l1_loss((y_fake.double() + 1) / 2, (y.double() + 1) / 2)) * int(sys.argv[3])
-            G_loss = G_fake_loss + L1 + 3*plusloss
+            G_loss = G_fake_loss + L1 + plusloss
 
         opt_gen.zero_grad()
         g_scaler.scale(G_loss).backward()
         g_scaler.step(opt_gen)
         g_scaler.update()
 
-        if idx % 10 == 0:
+        if idx % 1 == 0:
             writer.add_scalar("L1 train loss",L1.item()/config.L1_LAMBDA,epoch*(len(loop))+idx)
             writer.add_scalar("D_real train loss", torch.sigmoid(D_real).mean().item(), epoch * (len(loop)) + idx)
             writer.add_scalar("D_fake train loss", torch.sigmoid(D_fake).mean().item(), epoch * (len(loop)) + idx)
@@ -148,7 +148,7 @@ def test_fn(
 
 
 
-        if idx % 10 == 0:
+        if idx % 1 == 0:
             writer.add_scalar("L1 test loss",L1.item()/config.L1_LAMBDA,epoch*(len(loop))+idx)
             writer.add_scalar("D_real test loss", torch.sigmoid(D_real).mean().item(), epoch * (len(loop)) + idx)
             writer.add_scalar("D_fake test loss", torch.sigmoid(D_fake).mean().item(), epoch * (len(loop)) + idx)
@@ -224,8 +224,6 @@ def main():
         save_checkpoint(disc, opt_disc, epoch, filename=config.CHECKPOINT_DISC)
 
         save_some_examples(gen, test_loader, epoch, folder="evaluation")
-        schedulergen.step()
-        schedulerdisc.step()
         print("lr generateur",opt_gen.param_groups[0]["lr"])
         print("lr discriminateur", opt_gen.param_groups[0]["lr"])
 
