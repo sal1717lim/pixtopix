@@ -4,7 +4,7 @@ from utils import save_some_examples2 as save_some_examples
 import torch.nn as nn
 import torch.optim as optim
 import config
-
+from dice import diceloss
 from PIL import Image
 from  pytorch_msssim import MS_SSIM
 from costumDataset import Kaiset,depthset,RGBD
@@ -55,6 +55,7 @@ class Gradient_Net(nn.Module):
 if not os.path.exists("evaluation"):
     os.mkdir("evaluation")
 g=Gradient_Net(int(sys.argv[4]))
+d=diceloss()
 writer=SummaryWriter("train{}-{}".format(localtime().tm_mon,localtime().tm_mday))
 torch.backends.cudnn.benchmark = True
 
@@ -88,30 +89,30 @@ def train_fn(
             G_fake_loss = bce(D_fake, torch.ones_like(D_fake))
 
             gradienttir=g(y_fake[:,0,:,:])
-            gradientdepth=g(x2[:,0,:,:])
+            gradientdepth=g(y[:,0,:,:])
 
 
-            with torch.no_grad():
-                plusloss=l1_loss(gradientdepth,gradienttir)
+            plusloss=d(gradientdepth*0.5+0.5,gradienttir*0.5+0.5)
             if sys.argv[2]=="L1":
                 L1 = l1_loss(y_fake, y) * int(sys.argv[3])
             else:
                 L1 = (1 - l1_loss((y_fake.type(torch.DoubleTensor) + 1) / 2, (y.type(torch.DoubleTensor) + 1) / 2)) * int(sys.argv[3])
-            G_loss = G_fake_loss + L1 + 3*plusloss
+            G_loss = G_fake_loss + L1 + plusloss
 
         opt_gen.zero_grad()
         g_scaler.scale(G_loss).backward()
         g_scaler.step(opt_gen)
         g_scaler.update()
 
-        if idx % 10 == 0:
+        if idx % 1== 0:
             writer.add_scalar("L1 train loss",L1.item()/config.L1_LAMBDA,epoch*(len(loop))+idx)
             writer.add_scalar("D_real train loss", torch.sigmoid(D_real).mean().item(), epoch * (len(loop)) + idx)
             writer.add_scalar("D_fake train loss", torch.sigmoid(D_fake).mean().item(), epoch * (len(loop)) + idx)
             loop.set_postfix(
                 D_real=torch.sigmoid(D_real).mean().item(),
                 D_fake=torch.sigmoid(D_fake).mean().item(),
-                L1    =L1.item()
+                L1    =L1.item(),
+                dice=plusloss.item()
             )
 def test_fn(
     disc, gen, loader, l1_loss, bce, epoch=0
