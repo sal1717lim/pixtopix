@@ -229,10 +229,6 @@ def main():
         save_checkpoint(disc, opt_disc, epoch, filename=config.CHECKPOINT_DISC)
 
         save_some_examples(gen, test_loader, epoch, folder="evaluation")
-        schedulergen.step()
-        schedulerdisc.step()
-        print("lr generateur",opt_gen.param_groups[0]["lr"])
-        print("lr discriminateur", opt_gen.param_groups[0]["lr"])
 
 
 if __name__ == "__main__":
