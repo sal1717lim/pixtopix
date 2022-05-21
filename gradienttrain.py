@@ -94,9 +94,9 @@ def train_fn(
 
 
             plusloss=d(gradientdepth,gradienttir)
-            save_image(y_fake*0.5+0.5,"exemple.png")
-            save_image(gradienttir, "g.png")
-            save_image(gradientdepth, "d.png")
+            #save_image(y_fake*0.5+0.5,"exemple.png")
+            #save_image(gradienttir, "g.png")
+            #save_image(gradientdepth, "d.png")
             if sys.argv[2]=="L1":
                 L1 = l1_loss(y_fake, y) * int(sys.argv[3])
             else:
