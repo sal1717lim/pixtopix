@@ -33,22 +33,22 @@ class Gradient_Net(nn.Module):
   def __init__(self,batchsize):
 
     super(Gradient_Net, self).__init__()
-    kernel_x = [[-1., 0., 1.], [-2., 0., 2.], [-1., 0., 1.]]
+    kernel_x = [[[-1., 0., 1.], [-2., 0., 2.], [-1., 0., 1.]],[[-1., 0., 1.], [-2., 0., 2.], [-1., 0., 1.]],[[-1., 0., 1.], [-2., 0., 2.], [-1., 0., 1.]]]
     kernel_x = torch.FloatTensor(kernel_x).to(device)
-    kernel_y = [[-1., -2., -1.], [0., 0., 0.], [1., 2., 1.]]
+    kernel_y = [[[-1., -2., -1.], [0., 0., 0.], [1., 2., 1.]],[[-1., -2., -1.], [0., 0., 0.], [1., 2., 1.]],[[-1., -2., -1.], [0., 0., 0.], [1., 2., 1.]]]
     kernel_y = torch.FloatTensor(kernel_y).to(device)
-    kernel__y=torch.zeros((batchsize,1,3,3))
-    kernel__x = torch.zeros((batchsize, 1, 3, 3))
+    kernel__y=torch.zeros((batchsize,3,3,3))
+    kernel__x = torch.zeros((batchsize, 3, 3, 3))
     for i in range(batchsize):
-        kernel__y[i,:,:,:]=kernel_y
+
         kernel__x[i,:,:,:]=kernel_x
+        kernel__y[i, :, :, :] = kernel_y
     kernel__y=kernel__y.to(device)
     kernel__x = kernel__x.to(device)
     self.weight_x = nn.Parameter(data=kernel__x, requires_grad=False)
     self.weight_y = nn.Parameter(data=kernel__y, requires_grad=False)
 
   def forward(self, x):
-    x=x.unsqueeze(1)
     grad_x = F.conv2d(x.double().to(device), self.weight_x.double().to(device))
     grad_y = F.conv2d(x.double().to(device), self.weight_y.double().to(device))
     gradient =torch.sqrt( torch.pow(grad_x, 2) + torch.pow(grad_y, 2))
@@ -89,8 +89,8 @@ def train_fn(
             D_fake = disc(x, y_fake)
             G_fake_loss = bce(D_fake, torch.ones_like(D_fake))
 
-            gradienttir=g(y_fake[:,0,:,:]*0.5+0.5)
-            gradientdepth=g(y[:,0,:,:]*0.5+0.5)
+            gradienttir=g(y_fake*0.5+0.5)
+            gradientdepth=g(y*0.5+0.5)
 
 
             plusloss=d(gradientdepth,gradienttir)
