@@ -9,6 +9,7 @@ from PIL import Image
 from  pytorch_msssim import MS_SSIM
 from costumDataset import Kaiset,depthset,RGBD
 import sys
+from torchvision.utils import save_image
 #chooses what model to train
 if config.MODEL == "ResUnet":
     from resUnet import Generator
@@ -88,11 +89,14 @@ def train_fn(
             D_fake = disc(x, y_fake)
             G_fake_loss = bce(D_fake, torch.ones_like(D_fake))
 
-            gradienttir=g(y_fake[:,0,:,:])
-            gradientdepth=g(y[:,0,:,:])
+            gradienttir=g(y_fake[:,0,:,:]*0.5+0.5)
+            gradientdepth=g(y[:,0,:,:]*0.5+0.5)
 
 
-            plusloss=d(gradientdepth*0.5+0.5,gradienttir*0.5+0.5)
+            plusloss=d(gradientdepth,gradienttir)
+            save_image(y_fake*0.5+0.5,"exemple.png")
+            save_image(gradienttir, "g.png")
+            save_image(gradientdepth, "d.png")
             if sys.argv[2]=="L1":
                 L1 = l1_loss(y_fake, y) * int(sys.argv[3])
             else:
