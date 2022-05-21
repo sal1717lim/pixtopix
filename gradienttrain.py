@@ -94,9 +94,9 @@ def train_fn(
 
 
             plusloss=d(gradientdepth,gradienttir)
-            #save_image(y_fake*0.5+0.5,"exemple.png")
-            #save_image(gradienttir, "g.png")
-            #save_image(gradientdepth, "d.png")
+            save_image(y_fake*0.5+0.5,"exemple.png")
+            save_image(gradienttir, "g.png")
+            save_image(gradientdepth, "d.png")
             if sys.argv[2]=="L1":
                 L1 = l1_loss(y_fake, y) * int(sys.argv[3])
             else:
@@ -113,7 +113,6 @@ def train_fn(
             writer.add_scalar("D_real train loss", torch.sigmoid(D_real).mean().item(), epoch * (len(loop)) + idx)
             writer.add_scalar("D_fake train loss", torch.sigmoid(D_fake).mean().item(), epoch * (len(loop)) + idx)
             loop.set_postfix(
-                D_real=torch.sigmoid(D_real).mean().item(),
                 D_fake=torch.sigmoid(D_fake).mean().item(),
                 L1    =L1.item(),
                 dice=plusloss.item()
