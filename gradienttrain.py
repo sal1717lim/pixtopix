@@ -100,7 +100,7 @@ def train_fn(
             if sys.argv[2]=="L1":
                 L1 = l1_loss(y_fake, y) * int(sys.argv[3])
             else:
-                L1 = (1 - l1_loss((y_fake.double() + 1) / 2, (y.doubel() + 1) / 2)) * int(sys.argv[3])
+                L1 = (1 - l1_loss((y_fake.double() + 1) / 2, (y.double() + 1) / 2)) * int(sys.argv[3])
             G_loss = G_fake_loss + L1 + plusloss
 
         opt_gen.zero_grad()
