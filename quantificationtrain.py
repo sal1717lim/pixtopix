@@ -99,10 +99,13 @@ def train_fn(
 
             y = (y * 0.5 + 0.5) * 255
             y = (y / int(sys.argv[10])).int()*int(sys.argv[10])
+            #save_image(y_fake.float()/255,"exemple.png")
+            #save_image(y.float()/255, "g.png")
+            #save_image(gradientdepth, "d.png")
             if sys.argv[2]=="L1":
                 L1 = l1_loss(y_fake.float()/255, y.float()/255) * int(sys.argv[3])
             else:
-                L1 = (1 - l1_loss((y_fake.double() + 1) / 2, (y.double() + 1) / 2)) * int(sys.argv[3])
+                L1 = (1 - l1_loss((y_fake.double()/255 + 1) / 2, (y.double()/255 + 1) / 2)) * int(sys.argv[3])
             G_loss = G_fake_loss + L1 + plusloss
 
         opt_gen.zero_grad()
