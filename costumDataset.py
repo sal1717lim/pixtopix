@@ -50,7 +50,7 @@ class Kaiset2(Dataset):
 
     def __getitem__(self, index):
         x = Image.open(self.data[index])
-        x = config.transform2(x)
+        x = config.transform(x)
         _tmp = "" + self.data[index]
         _tmp = _tmp.replace('visible', 'lwir')
         y = Image.open(_tmp)

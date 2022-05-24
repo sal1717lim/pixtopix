@@ -42,7 +42,7 @@ def test_fn(
         # Train Discriminator
         with torch.cuda.amp.autocast():
             y_fake = gen(x)
-            y_fake=y_fake*0.5+0.5
+
             D_real = disc(x, y)
             D_real_loss = bce(D_real, torch.ones_like(D_real))
             D_fake = disc(x, y_fake.detach())
@@ -56,17 +56,17 @@ def test_fn(
             D_fake = disc(x, y_fake)
             G_fake_loss = bce(D_fake, torch.ones_like(D_fake))
 
-            y=y*0.5+0.5
 
+            y_fake=y_fake*0.5+0.5
             L1 = metric[0](y_fake, y)
 
             ssim = metric[1](y_fake.type(torch.DoubleTensor), y.type(torch.DoubleTensor))
-            mse =metric[2](y_fake, y)
+            mse =metric[2](y_fake*255, y*255)
 
             resultat.append(L1.item()*255)
             resultat2.append(ssim.item())
-            resultat3.append(mse.item()*255)
-            save_image(y_fake,"exemple/"+str(idx)+".png")
+            resultat3.append(mse.item())
+
 
         if idx % 1 == 0:
             writer.add_scalar("L1 test loss",L1.item()/config.L1_LAMBDA,epoch*(len(loop))+idx)
