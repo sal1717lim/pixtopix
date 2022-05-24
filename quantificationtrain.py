@@ -32,6 +32,7 @@ class Gradient_Net(nn.Module):
 
   def __init__(self,batchsize):
 
+
     super(Gradient_Net, self).__init__()
     kernel_x = [[[-1., 0., 1.], [-2., 0., 2.], [-1., 0., 1.]],[[-1., 0., 1.], [-2., 0., 2.], [-1., 0., 1.]],[[-1., 0., 1.], [-2., 0., 2.], [-1., 0., 1.]]]
     kernel_x = torch.FloatTensor(kernel_x).to(device)
@@ -40,7 +41,6 @@ class Gradient_Net(nn.Module):
     kernel__y=torch.zeros((batchsize,3,3,3))
     kernel__x = torch.zeros((batchsize, 3, 3, 3))
     for i in range(batchsize):
-
         kernel__x[i,:,:,:]=kernel_x
         kernel__y[i, :, :, :] = kernel_y
     kernel__y=kernel__y.to(device)
@@ -94,13 +94,18 @@ def train_fn(
 
 
             plusloss=d(gradientdepth,gradienttir)
-            #save_image(y_fake*0.5+0.5,"exemple.png")
-            #save_image(gradienttir, "g.png")
+            y_fake=(y_fake*0.5+0.5)*255
+            y_fake=(y_fake/int(sys.argv[10])).int()*int(sys.argv[10])
+
+            y = (y * 0.5 + 0.5) * 255
+            y = (y / int(sys.argv[10])).int()*int(sys.argv[10])
+            #save_image(y_fake.float()/255,"exemple.png")
+            #save_image(y.float()/255, "g.png")
             #save_image(gradientdepth, "d.png")
             if sys.argv[2]=="L1":
-                L1 = l1_loss(y_fake, y) * int(sys.argv[3])
+                L1 = l1_loss(y_fake.float()/255, y.float()/255) * int(sys.argv[3])
             else:
-                L1 = (1 - l1_loss((y_fake.double() + 1) / 2, (y.double() + 1) / 2)) * int(sys.argv[3])
+                L1 = (1 - l1_loss((y_fake.double()/255 + 1) / 2, (y.double()/255 + 1) / 2)) * int(sys.argv[3])
             G_loss = G_fake_loss + L1 + plusloss
 
         opt_gen.zero_grad()
